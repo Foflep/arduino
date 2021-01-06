@@ -55,7 +55,7 @@ void multiplexerLogic(int count){
 void loop(){
     uint8_t multiplexerLogicCount = 0;
 
-    for(int i = 0; i <= 8; i+=3){
+    for(int i = 0; i <= 24; i+=3){
       multiplexerLogic(multiplexerLogicCount);
 
       axisValues[i] = map(analogRead(A0),0,1023,-510,510);
@@ -70,7 +70,7 @@ void loop(){
       multiplexerLogicCount++;
     }
 
-    for(int i = 9; i < sizeof(axisValues) ; i++){
+    for(int i = 24; i < sizeof(axisValues) ; i++){
       multiplexerLogic(i);
 
       axisValues[i] = map(analogRead(A0),0,1023,-510,510);
