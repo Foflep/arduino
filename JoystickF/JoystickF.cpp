@@ -23,10 +23,10 @@
 #if defined(_USING_HID)
 
 #define JOYSTICK_REPORT_ID 0x03
-#define JOYSTICK_STATE_SIZE 13
+#define JOYSTICK_STATE_SIZE 17 // original 13 
 
 static const uint8_t _hidReportDescriptor[] PROGMEM = {
-  
+
 	// Joystick
 	0x05, 0x01,			      // USAGE_PAGE (Generic Desktop)
 	0x09, 0x04,			      // USAGE (Joystick)
@@ -68,7 +68,7 @@ static const uint8_t _hidReportDescriptor[] PROGMEM = {
 	0x75, 0x04,			      //   REPORT_SIZE (4)
 	0x95, 0x01,			      //   REPORT_COUNT (1)
 	0x81, 0x02,			      //   INPUT (Data,Var,Abs)
-                              
+
 	0x09, 0x39,			      //   USAGE (Hat switch)
 	0x15, 0x00,			      //   LOGICAL_MINIMUM (0)
 	0x25, 0x07,			      //   LOGICAL_MAXIMUM (7)
@@ -91,10 +91,14 @@ static const uint8_t _hidReportDescriptor[] PROGMEM = {
 	0x09, 0x33,		          //     USAGE (rx)
 	0x09, 0x34,		          //     USAGE (ry)
 	0x09, 0x35,		          //     USAGE (rz)
-	0x95, 0x0A,		          //     REPORT_COUNT (6)
+	0x09, 0x36,		          //     USAGE (axis7)
+	0x09, 0x37,		          //     USAGE (axis8)
+	0x09, 0x38,		          //     USAGE (axis9)
+	0x09, 0x39,		          //     USAGE (axis10)
+	0x95, 0x0A,		          //     REPORT_COUNT (8)
 	0x81, 0x02,		          //     INPUT (Data,Var,Abs)
 	0xc0,				      //   END_COLLECTION
-                              
+
 	0xc0				      // END_COLLECTION
 };
 
@@ -103,7 +107,7 @@ Joystick_::Joystick_()
 	// Setup HID report structure
 	static HIDSubDescriptor node(_hidReportDescriptor, sizeof(_hidReportDescriptor));
 	HID().AppendDescriptor(&node);
-	
+
 	// Initalize State
 	xAxis = 0;
 	yAxis = 0;
@@ -111,6 +115,8 @@ Joystick_::Joystick_()
 	xAxisRotation = 0;
 	yAxisRotation = 0;
 	zAxisRotation = 0;
+	axis7 = 0;
+	axis8 = 0;
 	buttons = 0;
 	throttle = 0;
 	rudder = 0;
@@ -193,6 +199,13 @@ void Joystick_::setZAxisRotation(int16_t value)
 	if (autoSendState) sendState();
 }
 
+void Joystick_::setAxis(int8_t value)
+{
+	axis7 = value;
+	if (autoSendState) sendState();
+}
+
+
 void Joystick_::setHatSwitch(int8_t hatSwitchIndex, int16_t value)
 {
 	hatSwitch[hatSwitchIndex % 2] = value;
@@ -205,7 +218,7 @@ void Joystick_::sendState()
 	uint32_t buttonTmp = buttons;
 
 	// Split 32 bit button-state into 4 bytes
-	data[0] = buttonTmp & 0xFF;		
+	data[0] = buttonTmp & 0xFF;
 	buttonTmp >>= 8;
 	data[1] = buttonTmp & 0xFF;
 	buttonTmp >>= 8;
@@ -240,8 +253,11 @@ void Joystick_::sendState()
 	data[10] = (xAxisRotation % 360) * 0.708;
 	data[11] = (yAxisRotation % 360) * 0.708;
 	data[12] = (zAxisRotation % 360) * 0.708;
-
-	// HID().SendReport(Report number, array of values in same order as HID descriptor, length)
+	data[13] = axis7 + 127;
+	data[14] = axis8 + 127;
+	data[15] = axis8 + 127;
+	data[16] = axis8 + 127;
+	//HID().SendReport(Report number, array of values in same order as HID descriptor, length)
 	HID().SendReport(JOYSTICK_REPORT_ID, data, JOYSTICK_STATE_SIZE);
 }
 
