@@ -51,6 +51,8 @@ private:
 	int16_t	 xAxisRotation;
 	int16_t	 yAxisRotation;
 	int16_t	 zAxisRotation;
+	int8_t	axis7;
+	int8_t	axis8;
 	uint32_t buttons;
 	uint8_t  throttle;
 	uint8_t  rudder;
@@ -69,6 +71,8 @@ public:
 	void setXAxisRotation(int16_t value);
 	void setYAxisRotation(int16_t value);
 	void setZAxisRotation(int16_t value);
+
+	void setAxis(int8_t value);
 
 	void setButton(uint8_t button, uint8_t value);
 	void pressButton(uint8_t button);
