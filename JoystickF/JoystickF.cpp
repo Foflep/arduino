@@ -23,6 +23,7 @@
 #if defined(_USING_HID)
 
 #define JOYSTICK_REPORT_ID 0x03
+//TODO: remember about size!!!!!
 #define JOYSTICK_STATE_SIZE 17 // original 13 
 
 static const uint8_t _hidReportDescriptor[] PROGMEM = {
@@ -109,14 +110,9 @@ Joystick_::Joystick_()
 	HID().AppendDescriptor(&node);
 
 	// Initalize State
-	xAxis = 0;
-	yAxis = 0;
-	zAxis = 0;
-	xAxisRotation = 0;
-	yAxisRotation = 0;
-	zAxisRotation = 0;
-	axis7 = 0;
-	axis8 = 0;
+	// TODO: Init axes array
+	// axes = ???
+
 	buttons = 0;
 	throttle = 0;
 	rudder = 0;
@@ -167,38 +163,7 @@ void Joystick_::setRudder(uint8_t value)
 	if (autoSendState) sendState();
 }
 
-void Joystick_::setXAxis(int8_t value)
-{
-	xAxis = value;
-	if (autoSendState) sendState();
-}
-void Joystick_::setYAxis(int8_t value)
-{
-	yAxis = value;
-	if (autoSendState) sendState();
-}
-void Joystick_::setZAxis(int8_t value)
-{
-	zAxis = value;
-	if (autoSendState) sendState();
-}
-
-void Joystick_::setXAxisRotation(int16_t value)
-{
-	xAxisRotation = value;
-	if (autoSendState) sendState();
-}
-void Joystick_::setYAxisRotation(int16_t value)
-{
-	yAxisRotation = value;
-	if (autoSendState) sendState();
-}
-void Joystick_::setZAxisRotation(int16_t value)
-{
-	zAxisRotation = value;
-	if (autoSendState) sendState();
-}
-
+//TODO: modify properly
 void Joystick_::setAxis(int8_t value)
 {
 	axis7 = value;
@@ -246,17 +211,19 @@ void Joystick_::sendState()
 	// Pack hat-switch states into a single byte
 	data[6] = (convertedHatSwitch[1] << 4) | (B00001111 & convertedHatSwitch[0]);
 
-	data[7] = xAxis + 127;
-	data[8] = yAxis + 127;
-	data[9] = zAxis + 127;
+	// TODO: Copy axes values into data[] array
+	// data[7] = xAxis + 127;
+	// data[8] = yAxis + 127;
+	// data[9] = zAxis + 127;
 
-	data[10] = (xAxisRotation % 360) * 0.708;
-	data[11] = (yAxisRotation % 360) * 0.708;
-	data[12] = (zAxisRotation % 360) * 0.708;
-	data[13] = axis7 + 127;
-	data[14] = axis8 + 127;
-	data[15] = axis8 + 127;
-	data[16] = axis8 + 127;
+	// data[10] = (xAxisRotation % 360) * 0.708;
+	// data[11] = (yAxisRotation % 360) * 0.708;
+	// data[12] = (zAxisRotation % 360) * 0.708;
+	// data[13] = axis7 + 127;
+	// data[14] = axis8 + 127;
+	// data[15] = axis8 + 127;
+	// data[16] = axis8 + 127;
+
 	//HID().SendReport(Report number, array of values in same order as HID descriptor, length)
 	HID().SendReport(JOYSTICK_REPORT_ID, data, JOYSTICK_STATE_SIZE);
 }
