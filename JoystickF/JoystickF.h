@@ -45,7 +45,17 @@ class Joystick_
 {
 private:
 	bool     autoSendState;
-	int8_t[32] axes; 
+	//int8_t	 xAxis;
+	//int8_t	 yAxis;
+	//int8_t	 zAxis;
+	//int16_t	 xAxisRotation;
+	//int16_t	 yAxisRotation;
+	//int16_t	 zAxisRotation;
+	//int8_t	axis7;
+	//int8_t	axis8;
+	for (i = 0; i <= 32; i++) {
+	int8_t axes[i]
+	}
 	uint32_t buttons;
 	uint8_t  throttle;
 	uint8_t  rudder;
@@ -57,19 +67,23 @@ public:
 	void begin(bool initAutoSendState = true);
 	void end();
 
-	// void setXAxis(int8_t value);
-	// void setYAxis(int8_t value);
-	// void setZAxis(int8_t value);
+	for (i = 0; i <= 32; i++) {
+		void setaxes[i](int8_t value);
+	}
 
-	// void setXAxisRotation(int16_t value);
-	// void setYAxisRotation(int16_t value);
-	// void setZAxisRotation(int16_t value);
+	/*void setXAxis(int8_t value);
+	void setYAxis(int8_t value);
+	void setZAxis(int8_t value);
 
-	void setAxis(uint8_t axisNumber, int8_t value);
+	void setXAxisRotation(int16_t value);
+	void setYAxisRotation(int16_t value);
+	void setZAxisRotation(int16_t value);
+
+	void setAxis(int8_t value);
 
 	void setButton(uint8_t button, uint8_t value);
 	void pressButton(uint8_t button);
-	void releaseButton(uint8_t button);
+	void releaseButton(uint8_t button);*/
 
 	void setThrottle(uint8_t value);
 	void setRudder(uint8_t value);
