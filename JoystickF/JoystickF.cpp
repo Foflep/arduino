@@ -22,9 +22,10 @@
 
 #if defined(_USING_HID)
 
+int axescount = 32;
+
 #define JOYSTICK_REPORT_ID 0x03
-//TODO: remember about size!!!!!
-#define JOYSTICK_STATE_SIZE 17 // original 13 
+#define JOYSTICK_STATE_SIZE 5 + axescount // original 13 
 
 static const uint8_t _hidReportDescriptor[] PROGMEM = {
 
@@ -37,11 +38,11 @@ static const uint8_t _hidReportDescriptor[] PROGMEM = {
 	// 32 Buttons
 	0x05, 0x09,			      //   USAGE_PAGE (Button)
 	0x19, 0x01,			      //   USAGE_MINIMUM (Button 1)
-	0x29, 0x20,			      //   USAGE_MAXIMUM (Button 32)
+	0x29, 0x07,			      //   USAGE_MAXIMUM (Button 32)
 	0x15, 0x00,			      //   LOGICAL_MINIMUM (0)
 	0x25, 0x01,			      //   LOGICAL_MAXIMUM (1)
 	0x75, 0x01,			      //   REPORT_SIZE (1)
-	0x95, 0x20,			      //   REPORT_COUNT (32)
+	0x95, 0x08,			      //   REPORT_COUNT (32)
 	0x55, 0x00,			      //   UNIT_EXPONENT (0)
 	0x65, 0x00,			      //   UNIT (None)
 	0x81, 0x02,			      //   INPUT (Data,Var,Abs)
@@ -92,11 +93,10 @@ static const uint8_t _hidReportDescriptor[] PROGMEM = {
 	0x09, 0x33,		          //     USAGE (rx)
 	0x09, 0x34,		          //     USAGE (ry)
 	0x09, 0x35,		          //     USAGE (rz)
-	0x09, 0x36,		          //     USAGE (axis7)
-	0x09, 0x37,		          //     USAGE (axis8)
-	0x09, 0x38,		          //     USAGE (axis9)
-	0x09, 0x39,		          //     USAGE (axis10)
-	0x95, 0x0A,		          //     REPORT_COUNT (8)
+	for (i = 0; i <= axescount; i++) {
+	0x09, 0x[36 + i],         //????
+}
+	0x95, 0x2A,		          //     REPORT_COUNT (8)
 	0x81, 0x02,		          //     INPUT (Data,Var,Abs)
 	0xc0,				      //   END_COLLECTION
 
@@ -109,15 +109,25 @@ Joystick_::Joystick_()
 	static HIDSubDescriptor node(_hidReportDescriptor, sizeof(_hidReportDescriptor));
 	HID().AppendDescriptor(&node);
 
-	// Initalize State
-	// TODO: Init axes array
-	// axes = ???
 
-	buttons = 0;
-	throttle = 0;
-	rudder = 0;
-	hatSwitch[0] = -1;
-	hatSwitch[1] = -1;
+	for (i = 0; i <= axescount; i++) {
+		axes[i] = 0;
+	}
+
+	//// Initalize State
+	//xAxis = 0;
+	//yAxis = 0;
+	//zAxis = 0;
+	//xAxisRotation = 0;
+	//yAxisRotation = 0;
+	//zAxisRotation = 0;
+	//axis7 = 0;
+	//axis8 = 0;
+	//buttons = 0;
+	//throttle = 0;
+	//rudder = 0;
+	//hatSwitch[0] = -1;
+	//hatSwitch[1] = -1;
 }
 
 void Joystick_::begin(bool initAutoSendState)
@@ -151,7 +161,12 @@ void Joystick_::releaseButton(uint8_t button)
 	bitClear(buttons, button);
 	if (autoSendState) sendState();
 }
-
+	
+for (i = 0; i <= axescount; i++) {
+	void Joystick_::setaxes[i](uint8_t value) {
+		axes[i] = value;
+	}
+	}
 void Joystick_::setThrottle(uint8_t value)
 {
 	throttle = value;
@@ -163,12 +178,43 @@ void Joystick_::setRudder(uint8_t value)
 	if (autoSendState) sendState();
 }
 
-//TODO: modify properly
-void Joystick_::setAxis(int8_t value)
-{
-	axis7 = value;
-	if (autoSendState) sendState();
-}
+//void Joystick_::setXAxis(int8_t value)
+//{
+//	xAxis = value;
+//	if (autoSendState) sendState();
+//}
+//void Joystick_::setYAxis(int8_t value)
+//{
+//	yAxis = value;
+//	if (autoSendState) sendState();
+//}
+//void Joystick_::setZAxis(int8_t value)
+//{
+//	zAxis = value;
+//	if (autoSendState) sendState();
+//}
+//
+//void Joystick_::setXAxisRotation(int16_t value)
+//{
+//	xAxisRotation = value;
+//	if (autoSendState) sendState();
+//}
+//void Joystick_::setYAxisRotation(int16_t value)
+//{
+//	yAxisRotation = value;
+//	if (autoSendState) sendState();
+//}
+//void Joystick_::setZAxisRotation(int16_t value)
+//{
+//	zAxisRotation = value;
+//	if (autoSendState) sendState();
+//}
+//
+//void Joystick_::setAxis(int8_t value)
+//{
+//	axis7 = value;
+//	if (autoSendState) sendState();
+//}
 
 
 void Joystick_::setHatSwitch(int8_t hatSwitchIndex, int16_t value)
@@ -182,17 +228,27 @@ void Joystick_::sendState()
 	uint8_t data[JOYSTICK_STATE_SIZE];
 	uint32_t buttonTmp = buttons;
 
-	// Split 32 bit button-state into 4 bytes
-	data[0] = buttonTmp & 0xFF;
+	uint8_t d = 0;
+	data[d] = buttonTmp & 0xFF;
+	/*buttonTmp >>= 8;*/
+	d++;
+	/*data[d] = buttonTmp & 0xFF;
 	buttonTmp >>= 8;
-	data[1] = buttonTmp & 0xFF;
-	buttonTmp >>= 8;
-	data[2] = buttonTmp & 0xFF;
-	buttonTmp >>= 8;
-	data[3] = buttonTmp & 0xFF;
+	d++;
+	data[d] = buttonTmp & 0xFF;
+	d++;*/
 
-	data[4] = throttle;
-	data[5] = rudder;
+	/*buttonTmp >>= 8;
+	data[d] = buttonTmp & 0xFF;
+	d++;
+*/
+
+	data[d] = throttle;
+	d++;
+
+	data[d] = rudder;
+	d++;
+
 
 	// Calculate hat-switch values
 	uint8_t convertedHatSwitch[2];
@@ -209,21 +265,43 @@ void Joystick_::sendState()
 	}
 
 	// Pack hat-switch states into a single byte
-	data[6] = (convertedHatSwitch[1] << 4) | (B00001111 & convertedHatSwitch[0]);
+	data[d] = (convertedHatSwitch[1] << 4) | (B00001111 & convertedHatSwitch[0]);
+	d++
 
-	// TODO: Copy axes values into data[] array
-	// data[7] = xAxis + 127;
-	// data[8] = yAxis + 127;
-	// data[9] = zAxis + 127;
+		for (i = 0; i <= axescount; i++) {
+			data[d] = axes[i] + 127;
+			d++
+	}
+	/*data[d] = xAxis + 127;
+	d++;
 
-	// data[10] = (xAxisRotation % 360) * 0.708;
-	// data[11] = (yAxisRotation % 360) * 0.708;
-	// data[12] = (zAxisRotation % 360) * 0.708;
-	// data[13] = axis7 + 127;
-	// data[14] = axis8 + 127;
-	// data[15] = axis8 + 127;
-	// data[16] = axis8 + 127;
+	data[d] = yAxis + 127;
+	d++;
 
+	data[d] = zAxis + 127;
+	d++;
+
+
+	data[d] = (xAxisRotation % 360) * 0.708;
+	d++;
+
+	data[d] = (yAxisRotation % 360) * 0.708;
+	d++;
+
+	data[d] = (zAxisRotation % 360) * 0.708;
+	d++;
+
+	data[d] = axis7 + 127;
+	d++;
+
+	data[d] = axis8 + 127;
+	d++;
+
+	data[d] = axis8 + 127;
+	d++;
+
+	data[d] = axis8 + 127;
+	d++;*/
 	//HID().SendReport(Report number, array of values in same order as HID descriptor, length)
 	HID().SendReport(JOYSTICK_REPORT_ID, data, JOYSTICK_STATE_SIZE);
 }
