@@ -93,7 +93,7 @@ static const uint8_t _hidReportDescriptor[] PROGMEM = {
 	0x09, 0x33,		          //     USAGE (rx)
 	0x09, 0x34,		          //     USAGE (ry)
 	0x09, 0x35,		          //     USAGE (rz)
-	for (i = 0; i <= axescount; i++) {
+	for (i = 0; i < axescount; i++) {
 	0x09, 0x[36 + i],         //????
 }
 	0x95, 0x2A,		          //     REPORT_COUNT (8)
@@ -110,7 +110,7 @@ Joystick_::Joystick_()
 	HID().AppendDescriptor(&node);
 
 
-	for (i = 0; i <= axescount; i++) {
+	for (i = 0; i < axescount; i++) {
 		axes[i] = 0;
 	}
 
@@ -162,7 +162,7 @@ void Joystick_::releaseButton(uint8_t button)
 	if (autoSendState) sendState();
 }
 	
-for (i = 0; i <= axescount; i++) {
+for (i = 0; i < axescount; i++) {
 	void Joystick_::setaxes[i](uint8_t value) {
 		axes[i] = value;
 	}
